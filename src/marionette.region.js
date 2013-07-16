@@ -126,13 +126,15 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
       this.close();
     }
 
+    this.open(view);
+    
     view.render();
 
     if (isDifferentView || isViewClosed) {
       this.open(view);
     }
     
-    this.currentView = view;
+    this.attachView(view);
 
     Marionette.triggerMethod.call(this, "show", view);
     Marionette.triggerMethod.call(view, "show");
@@ -176,7 +178,11 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
   // and will not replace the current HTML for the `el`
   // of the region.
   attachView: function(view){
+    if(view.parentRegion) {
+      view.parentRegion.currentView = undefined;
+    }
     this.currentView = view;
+    view.parentRegion = this;
   },
 
   // Reset the region by closing any existing view and
